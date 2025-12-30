@@ -1,51 +1,116 @@
+#+title: nullutil
 #+author: conao3
-#+date: <2020-03-20 Fri>
 
-[[https://github.com/conao3/nullutil][https://raw.githubusercontent.com/conao3/files/master/blob/headers/png/nullutil.png]]
 [[https://github.com/conao3/nullutil/blob/master/LICENSE][https://img.shields.io/github/license/conao3/nullutil.svg?style=flat-square]]
 [[https://github.com/conao3/nullutil/releases][https://img.shields.io/github/tag/conao3/nullutil.svg?style=flat-square]]
-[[https://github.com/conao3/nullutil/actions][https://img.shields.io/badge/patreon-become%20a%20patron-orange.svg?logo=patreon&style=flat-square]]
-[[https://twitter.com/conao_3][https://img.shields.io/badge/twitter-@conao__3-blue.svg?logo=twitter&style=flat-square]]
-[[https://conao3-support.slack.com/join/shared_invite/enQtNjUzMDMxODcyMjE1LWUwMjhiNTU3Yjk3ODIwNzAxMTgwOTkxNmJiN2M4OTZkMWY0NjI4ZTg4MTVlNzcwNDY2ZjVjYmRiZmJjZDU4MDE][https://img.shields.io/badge/chat-on_slack-blue.svg?logo=slack&style=flat-square]]
+[[https://github.com/conao3/nullutil/actions][https://github.com/conao3/nullutil/actions/workflows/test.yml/badge.svg]]
+
+Null-safe utilities for Python. Provides concise operators for null coalescing and optional chaining, inspired by modern language features like TypeScript's =??= and =?.= operators.
 
 * Table of Contents
-- [[#description][Description]]
-- [[#install][Install]]
+- [[#features][Features]]
+- [[#installation][Installation]]
 - [[#usage][Usage]]
-- [[#information][Information]]
-  - [[#community][Community]]
-  - [[#contribution][Contribution]]
-  - [[#license][License]]
-  - [[#author][Author]]
+  - [[#null-coalescing-qq][Null Coalescing (qq)]]
+  - [[#safe-access-q_][Safe Access (q_)]]
+  - [[#safe-index-access-ql7][Safe Index Access (qL7)]]
+  - [[#safe-evaluation-q_let][Safe Evaluation (q_let)]]
+- [[#license][License]]
+- [[#author][Author]]
+- [[#acknowledgments][Acknowledgments]]
 
-* Description
-Python nullutil.
+* Features
 
-* Install
+- *Null Coalescing*: Provide default values when encountering =None=
+- *Safe Member Access*: Access object attributes and call methods without =None= checks
+- *Safe Index Access*: Access collection elements without worrying about =None= collections
+- *Safe Evaluation*: Execute expressions only when all parameters are non-None
+
+* Installation
+
+#+begin_src bash
+pip install nullutil
+#+end_src
+
+Or with Poetry:
+
+#+begin_src bash
+poetry add nullutil
+#+end_src
 
 * Usage
 
-* Information
-** Community
-All feedback and suggestions are welcome!
+** Null Coalescing (qq)
 
-You can use github issues, but you can also use [[https://conao3-support.slack.com/join/shared_invite/enQtNjUzMDMxODcyMjE1LWUwMjhiNTU3Yjk3ODIwNzAxMTgwOTkxNmJiN2M4OTZkMWY0NjI4ZTg4MTVlNzcwNDY2ZjVjYmRiZmJjZDU4MDE][Slack]]
-if you want a more casual conversation.
+The =qq= function implements the null coalescing pattern (equivalent to =??= in other languages):
 
-** Contribution
-We welcome PR!
+#+begin_src python
+from nullutil import qq
 
-** License
+# Returns lhs if not None, otherwise returns rhs
+value = qq(potentially_none_value, "default")
+
+# Practical example
+username = qq(user.get("name"), "Anonymous")
+#+end_src
+
+** Safe Access (q_)
+
+The =q_= function provides safe attribute access and method calls (equivalent to =?.= in other languages):
+
+#+begin_src python
+from nullutil import q_
+
+# Safe attribute access: instance?.member
+name = q_(user, "name")  # Returns None if user is None
+
+# Safe method call: instance?.method(args)
+result = q_(service, "fetch", ["arg1", "arg2"])  # Positional args as list
+result = q_(service, "fetch", {"key": "value"})  # Keyword args as dict
+result = q_(service, "process", single_arg)      # Single argument
+#+end_src
+
+** Safe Index Access (qL7)
+
+The =qL7= function provides safe index/key access for collections:
+
+#+begin_src python
+from nullutil import qL7
+
+# Safe index access: collection?[index]
+first_item = qL7(items, 0)      # Returns None if items is None
+user_name = qL7(user_dict, "name")  # Works with dictionaries too
+#+end_src
+
+** Safe Evaluation (q_let)
+
+The =q_let= function executes an expression only when all parameters are non-None:
+
+#+begin_src python
+from nullutil import q_let
+
+# Only executes if all params are non-None
+result = q_let([a, b, c], lambda x, y, z: x + y + z)
+
+# With keyword arguments
+result = q_let({"x": a, "y": b}, lambda x, y: x * y)
+
+# With single parameter
+result = q_let(value, lambda v: v.upper())
+#+end_src
+
+* License
+
 #+begin_example
-  Apache License 2.0
-  Copyright (c) Naoya Yamashita - https://conao3.com
-  https://github.com/conao3/nullutil/blob/master/LICENSE
+Apache License 2.0
+Copyright (c) Naoya Yamashita - https://conao3.com
+https://github.com/conao3/nullutil/blob/master/LICENSE
 #+end_example
 
-** Author
-- Naoya Yamashita ([[https://github.com/conao3][conao3]])
+* Author
 
-** Special Thanks (Original Code)
-BlueRayi wrote original nullutil in this blog post [[https://qiita.com/BlueRayi/items/7f74253c04b3c54e4443][【Python】None チェックと分岐でキレ散らかしたので nullutil.py 作った]].
+Naoya Yamashita ([[https://github.com/conao3][conao3]])
 
-He said he license that  original code under CC0 in [[https://twitter.com/BlueRayi/status/1434432139219533829][this Tweet]].
+* Acknowledgments
+
+This project is based on original work by BlueRayi, published in the blog post [[https://qiita.com/BlueRayi/items/7f74253c04b3c54e4443][Python None check utility]]. The original code was released under CC0.
